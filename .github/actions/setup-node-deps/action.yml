@@ -1,0 +1,38 @@
+name: "Setup Node.js and Install Dependencies"
+description: "Reusable composite action to setup Node.js, restore npm cache, and install dependencies"
+
+inputs:
+  node-version:
+    description: "Node.js version to use"
+    required: false
+    default: "18.14"
+  working-directory:
+    description: "Directory containing the Node.js project"
+    required: false
+    default: "starter/frontend"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Cache node modules
+      uses: actions/cache@v3
+      id: npm-cache
+      with:
+        path: ${{ inputs.working-directory }}/node_modules
+        key: ${{ runner.os }}-node-${{ inputs.node-version }}-${{ hashFiles(format('{0}/package-lock.json', inputs.working-directory)) }}
+        restore-keys: |
+          ${{ runner.os }}-node-${{ inputs.node-version }}-
+
+    - name: Install dependencies
+      if: steps.npm-cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: npm ci

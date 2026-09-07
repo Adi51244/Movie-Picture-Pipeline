@@ -1,0 +1,100 @@
+name: Backend Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "starter/backend/**"
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: starter/backend
+
+    steps:
+      - name: Setup Python and Install Dependencies
+        uses: ./.github/actions/setup-python-deps
+        with:
+          python-version: "3.10"
+          working-directory: starter/backend
+
+      - name: Run Flake8 Linter
+        working-directory: starter/backend
+        run: pipenv run lint
+
+  test:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: starter/backend
+
+    steps:
+      - name: Setup Python and Install Dependencies
+        uses: ./.github/actions/setup-python-deps
+        with:
+          python-version: "3.10"
+          working-directory: starter/backend
+
+      - name: Run Pytest
+        working-directory: starter/backend
+        run: pipenv run test
+
+  build:
+    name: Build Backend Docker Image
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        working-directory: starter/backend
+        run: |
+          docker build \
+            --tag mp-backend:latest \
+            .
+
+  # Stand-out feature: Post a comment to the PR with CI results
+  pr-comment:
+    name: Post PR Comment
+    runs-on: ubuntu-latest
+    needs: [lint, test, build]
+    if: always() && github.event_name == 'pull_request'
+
+    steps:
+      - name: Create status comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const lintResult = '${{ needs.lint.result }}';
+            const testResult = '${{ needs.test.result }}';
+            const buildResult = '${{ needs.build.result }}';
+
+            const emoji = (r) => r === 'success' ? '✅' : r === 'skipped' ? '⏭️' : '❌';
+
+            const body = `## 🐍 Backend CI Results
+
+            | Job    | Status |
+            |--------|--------|
+            | Lint   | ${emoji(lintResult)} ${lintResult} |
+            | Test   | ${emoji(testResult)} ${testResult} |
+            | Build  | ${emoji(buildResult)} ${buildResult} |
+
+            ${lintResult === 'success' && testResult === 'success' && buildResult === 'success'
+              ? '🚀 All checks passed! This PR is ready for review.'
+              : '⚠️ Some checks failed. Please review the logs above.'}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });

@@ -1,0 +1,101 @@
+name: Frontend Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "starter/frontend/**"
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: starter/frontend
+
+    steps:
+      - name: Setup Node.js and Install Dependencies
+        uses: ./.github/actions/setup-node-deps
+        with:
+          node-version: "18.14"
+          working-directory: starter/frontend
+
+      - name: Run ESLint
+        working-directory: starter/frontend
+        run: npm run lint
+
+  test:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: starter/frontend
+
+    steps:
+      - name: Setup Node.js and Install Dependencies
+        uses: ./.github/actions/setup-node-deps
+        with:
+          node-version: "18.14"
+          working-directory: starter/frontend
+
+      - name: Run Tests
+        working-directory: starter/frontend
+        run: CI=true npm test
+
+  build:
+    name: Build Frontend Docker Image
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        working-directory: starter/frontend
+        run: |
+          docker build \
+            --build-arg REACT_APP_MOVIE_API_URL=http://localhost:5000 \
+            --tag mp-frontend:latest \
+            .
+
+  # Stand-out feature: Post a comment to the PR with CI results
+  pr-comment:
+    name: Post PR Comment
+    runs-on: ubuntu-latest
+    needs: [lint, test, build]
+    if: always() && github.event_name == 'pull_request'
+
+    steps:
+      - name: Create status comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const lintResult = '${{ needs.lint.result }}';
+            const testResult = '${{ needs.test.result }}';
+            const buildResult = '${{ needs.build.result }}';
+
+            const emoji = (r) => r === 'success' ? '✅' : r === 'skipped' ? '⏭️' : '❌';
+
+            const body = `## 🎬 Frontend CI Results
+
+            | Job    | Status |
+            |--------|--------|
+            | Lint   | ${emoji(lintResult)} ${lintResult} |
+            | Test   | ${emoji(testResult)} ${testResult} |
+            | Build  | ${emoji(buildResult)} ${buildResult} |
+
+            ${lintResult === 'success' && testResult === 'success' && buildResult === 'success'
+              ? '🚀 All checks passed! This PR is ready for review.'
+              : '⚠️ Some checks failed. Please review the logs above.'}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });

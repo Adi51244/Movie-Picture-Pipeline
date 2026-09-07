@@ -1,0 +1,39 @@
+name: "Setup Python and Install Dependencies"
+description: "Reusable composite action to setup Python, restore pipenv cache, and install dependencies"
+
+inputs:
+  python-version:
+    description: "Python version to use"
+    required: false
+    default: "3.10"
+  working-directory:
+    description: "Directory containing the Python project"
+    required: false
+    default: "starter/backend"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Cache pipenv virtualenv
+      uses: actions/cache@v3
+      id: pipenv-cache
+      with:
+        path: ~/.local/share/virtualenvs
+        key: ${{ runner.os }}-pipenv-${{ inputs.python-version }}-${{ hashFiles(format('{0}/Pipfile.lock', inputs.working-directory)) }}
+        restore-keys: |
+          ${{ runner.os }}-pipenv-${{ inputs.python-version }}-
+
+    - name: Install pipenv and dependencies
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        pip install pipenv
+        pipenv install --dev
