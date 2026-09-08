@@ -17,6 +17,9 @@ jobs:
         working-directory: starter/frontend
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Setup Node.js and Install Dependencies
         uses: ./.github/actions/setup-node-deps
         with:
@@ -35,6 +38,9 @@ jobs:
         working-directory: starter/frontend
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Setup Node.js and Install Dependencies
         uses: ./.github/actions/setup-node-deps
         with:
