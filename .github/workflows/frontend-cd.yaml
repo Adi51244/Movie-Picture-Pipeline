@@ -83,10 +83,10 @@ jobs:
           echo "image=$ECR_REGISTRY/frontend:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Update kubeconfig for EKS
-        run: |
-          aws eks update-kubeconfig \
-            --name ${{ secrets.EKS_CLUSTER_NAME }} \
-            --region ${{ secrets.AWS_REGION }}
+        run: aws eks update-kubeconfig --name ${{ secrets.EKS_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v2
 
       - name: Set image tag and deploy with Kustomize
         env:
