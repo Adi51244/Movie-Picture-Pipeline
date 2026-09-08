@@ -31,3 +31,4 @@ export default function App() {
 // Trigger CD pipeline rollout
 // Deploy rollout sanitized
 // Connected to backend load balancer
+// Verify Frontend CI build job checklist
