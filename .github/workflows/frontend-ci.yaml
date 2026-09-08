@@ -60,6 +60,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Setup Node.js and Install Dependencies
+        uses: ./.github/actions/setup-node-deps
+        with:
+          node-version: "18.14"
+          working-directory: starter/frontend
+
+      - name: Run Tests
+        working-directory: starter/frontend
+        run: CI=true npm test
+
       - name: Build Docker image
         working-directory: starter/frontend
         run: |

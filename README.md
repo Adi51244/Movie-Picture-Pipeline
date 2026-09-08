@@ -97,7 +97,7 @@ flowchart TD
   * `lint`: Runs ESLint on the frontend codebase.
   * `test`: Executes React unit tests using Jest.
   * *Parallel Execution:* `lint` and `test` execute concurrently.
-  * `build`: Runs Docker image build **only after** `lint` and `test` succeed (`needs: [lint, test]`).
+  * `build`: Sets up Node.js, restores cache, installs dependencies, executes unit tests (`CI=true npm test`), and builds the Docker image only after `lint` and `test` succeed (`needs: [lint, test]`).
   * `pr-comment`: Automated bot that posts a markdown summary of CI results directly to the Pull Request.
 
 ### 2. Backend Continuous Integration (`.github/workflows/backend-ci.yaml`)
