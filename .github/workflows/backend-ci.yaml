@@ -17,6 +17,9 @@ jobs:
         working-directory: starter/backend
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Setup Python and Install Dependencies
         uses: ./.github/actions/setup-python-deps
         with:
@@ -35,6 +38,9 @@ jobs:
         working-directory: starter/backend
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Setup Python and Install Dependencies
         uses: ./.github/actions/setup-python-deps
         with:
@@ -65,6 +71,9 @@ jobs:
   pr-comment:
     name: Post PR Comment
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
     needs: [lint, test, build]
     if: always() && github.event_name == 'pull_request'
 

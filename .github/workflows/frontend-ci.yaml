@@ -17,6 +17,9 @@ jobs:
         working-directory: starter/frontend
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Setup Node.js and Install Dependencies
         uses: ./.github/actions/setup-node-deps
         with:
@@ -35,6 +38,9 @@ jobs:
         working-directory: starter/frontend
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Setup Node.js and Install Dependencies
         uses: ./.github/actions/setup-node-deps
         with:
@@ -66,6 +72,9 @@ jobs:
   pr-comment:
     name: Post PR Comment
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
     needs: [lint, test, build]
     if: always() && github.event_name == 'pull_request'
 

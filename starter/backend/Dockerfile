@@ -1,5 +1,6 @@
 FROM public.ecr.aws/docker/library/python:3.10-alpine
 ENV FLASK_RUN_HOST=0.0.0.0
+ENV CFLAGS="-Wno-error=incompatible-pointer-types -Wno-error=int-conversion"
 
 WORKDIR /
 RUN adduser -u 1000 -D app
@@ -17,7 +18,7 @@ RUN apk update && \
 RUN mkdir -p /var/www/app && mkdir /app
 
 COPY Pipfile* /app
-RUN cd /app && pipenv install --system --deploy
+RUN cd /app && CFLAGS="-Wno-error=incompatible-pointer-types -Wno-error=int-conversion" pipenv install --system --deploy
 
 COPY . /app
 

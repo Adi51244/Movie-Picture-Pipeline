@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Setup Node.js and Install Dependencies
         uses: ./.github/actions/setup-node-deps
         with:
@@ -33,6 +36,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Setup Node.js and Install Dependencies
         uses: ./.github/actions/setup-node-deps
         with:
