@@ -21,6 +21,9 @@ A production-grade, automated DevOps release pipeline for the **Movie Picture** 
 | **Frontend Web App** | AWS Classic LoadBalancer | [Live Frontend Catalog](http://a04274a5fcb7d4c1ea4ac3617054926a-516495786.us-east-1.elb.amazonaws.com) | Interactive React UI featuring glassmorphic dark cinema theme |
 | **Backend REST API** | AWS Classic LoadBalancer | [Live Movie API (`/movies`)](http://a04f8212441f944338bd16afff9c1066-499144066.us-east-1.elb.amazonaws.com/movies) | Flask REST API returning movie catalog JSON data |
 
+### 🖥️ Live Deployed Application Preview
+![Live Deployed Movie Picture Frontend](evidence/6_deployment_proof/deployed_enhanced.png)
+
 ---
 
 ## 🏗️ Architecture Overview
