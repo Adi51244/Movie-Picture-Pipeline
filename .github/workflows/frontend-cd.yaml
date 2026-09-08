@@ -10,7 +10,7 @@ on:
 
 env:
   # Set the backend URL for the React app build
-  REACT_APP_MOVIE_API_URL: ${{ vars.REACT_APP_MOVIE_API_URL || 'http://localhost:5000' }}
+  REACT_APP_MOVIE_API_URL: ${{ vars.REACT_APP_MOVIE_API_URL || 'http://a04f8212441f944338bd16afff9c1066-499144066.us-east-1.elb.amazonaws.com' }}
 
 jobs:
   lint:
