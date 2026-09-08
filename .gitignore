@@ -5,3 +5,15 @@ node_modules
 *.tfstate.backup
 credentials
 .pytest_cache
+
+# Local evidence folder (screenshots, notes — not for repo)
+evidence/
+
+# Local env files
+.env
+.env.local
+*.env
+
+# OS files
+.DS_Store
+Thumbs.db
