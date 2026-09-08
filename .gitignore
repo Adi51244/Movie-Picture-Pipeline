@@ -6,8 +6,6 @@ node_modules
 credentials
 .pytest_cache
 
-# Local evidence folder (screenshots, notes — not for repo)
-evidence/
 
 # Local env files
 .env
